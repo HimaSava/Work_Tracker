@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['D:\\Offline_Projects\\GIT\\Work_Monitor'],
+             pathex=['D:\\Offline_Projects\\GIT\\Work_Tracker'],
              binaries=[],
              datas=[],
              hiddenimports=[],

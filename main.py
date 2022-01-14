@@ -156,7 +156,10 @@ def update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel):
                 spentTime = datetime.datetime.now() - startTime
                 hour = (spentTime.days*24) +int(spentTime.seconds/3600) + pastTime.hour
                 minute = int(spentTime.seconds/60) + pastTime.minute
-                seconds = spentTime.seconds + pastTime.second
+                seconds = spentTime.seconds%60 + pastTime.second
+                if seconds >= 60:
+                    seconds -= 60
+                    minute += 1
                 topTime[i] = datetime.time(hour, minute, seconds)
             
             if topStatus[i] == "In Progress":
