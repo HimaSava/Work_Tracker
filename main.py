@@ -26,6 +26,7 @@ startTime = datetime.time()
 activeTopic = StringVar()
 pastTime = datetime.time()
 On = False
+progStartTime = datetime.time()
 
 
 
@@ -57,12 +58,13 @@ def screen1():
 
 
 def screen2():
-    global flag_screen2
+    global flag_screen2, progStartTime
     clearAll()
     flag_screen2 = 1
     height = 200 + (len(topics) * 30)
     geo = "600x" + str(height)
     root.geometry(geo)
+    progStartTime = datetime.datetime.now()
     
     #Frame to dislplay Date and Time
     workFrame = Frame(root)
@@ -153,14 +155,18 @@ def update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel):
         timeoutLabel.config(text=nowTime)
         for i in range(len(topics)):
             if activeTopic == topics[i]:
-                spentTime = datetime.datetime.now() - startTime
-                hour = (spentTime.days*24) +int(spentTime.seconds/3600) + pastTime.hour
-                minute = int(spentTime.seconds/60) + pastTime.minute
-                seconds = spentTime.seconds%60 + pastTime.second
-                if seconds >= 60:
-                    seconds -= 60
-                    minute += 1
-                topTime[i] = datetime.time(hour, minute, seconds)
+                # spentTime = datetime.datetime.now() - startTime
+                # hour = spentTime.seconds / 3600 + pastTime.hour
+                # minute = (spentTime.seconds % 3600) / 60 + pastTime.minute
+                # seconds = (spentTime.seconds % 3600) % 60 + pastTime.second
+                # if seconds >= 60:
+                #     seconds -= 60
+                #     minute += 1
+                # if minute >= 60:
+                #     hour += 1
+                #     minute -= 60
+                # topTime[i] = datetime.time(int(hour), int(minute), int(seconds))
+                topTime[i] = spentTimeCal(startTime, pastTime)
             
             if topStatus[i] == "In Progress":
                 status[i].config(text = topStatus[i], font=('arial',12,'bold'), fg="red")
@@ -204,11 +210,18 @@ def actionButton_command(clicked, actionButton):
             if activeTopic == topics[i]:
                 On = False
                 topStatus[i] = "Done"
-                spentTime = datetime.datetime.now() - startTime
-                hour = (spentTime.days*24) +int(spentTime.seconds/3600) + pastTime.hour
-                minute = int(spentTime.seconds/60) + pastTime.minute
-                seconds = spentTime.seconds + pastTime.second
-                topTime[i] = datetime.time(hour, minute, seconds)
+                # spentTime = datetime.datetime.now() - startTime
+                # hour = spentTime.seconds / 3600 + pastTime.hour
+                # minute = (spentTime.seconds % 3600) / 60 + pastTime.minute
+                # seconds = (spentTime.seconds % 3600) % 60 + pastTime.second
+                # if seconds >= 60:
+                #     seconds -= 60
+                #     minute += 1
+                # if minute >= 60:
+                #     hour += 1
+                #     minute -= 60
+                # topTime[i] = datetime.time(int(hour), int(minute), int(seconds))
+                topTime[i] = spentTimeCal(startTime, pastTime)
                 actionButton.config(text="Start", fg="#00FF00")
                 log(activeTopic, startTime)
                 activeTopic = ""
@@ -224,11 +237,12 @@ def actionButton_command(clicked, actionButton):
                 actionButton.config(text="Stop", fg="red")
 
 def log(activeTopic, startTime):
-    spentTime = datetime.datetime.now() - startTime
-    hour = (spentTime.days*24) +int(spentTime.seconds/3600)
-    minute = int(spentTime.seconds/60) 
-    seconds = spentTime.seconds 
-    spent = datetime.time(hour, minute, seconds)
+    # spentTime = datetime.datetime.now() - startTime
+    # hour = (spentTime.days*24) +int(spentTime.seconds/3600)
+    # minute = int(spentTime.seconds/60) 
+    # seconds = spentTime.seconds 
+    # spent = datetime.time(hour, minute, seconds)
+    spent = spentTimeCal(startTime)
     now = datetime.datetime.now()
     nowDate = now.strftime("%d/%m/%Y")
     nowTime = now.strftime("%I:%M:%S %p")
@@ -246,9 +260,11 @@ def newlog(newactivity):
         f.write(write) 
 
 def endDay():
-    global topTime, topics, topStatus
+    global topTime, topics, topStatus, progStartTime
     with open('EndDay_Log.csv','a') as file:
         file.write('\n' + "Date" + "," + datetime.datetime.now().strftime("%d/%m/%Y") + '\n')
+        file.write("Start time" + "," + progStartTime.strftime("%X") + '\n')
+        file.write("End time" + "," + datetime.datetime.now().strftime("%X") + '\n')
         for i in range(len(topics)):
             file.write(topics[i] + "," + topStatus[i] + ',' + topTime[i].strftime("%X") + '\n')        
     screen1()
@@ -264,6 +280,20 @@ def addTopic(addTopicEntry):
     newlog(newtopic)
     addTopicEntry.delete(0, END)
     screen2()
+
+def spentTimeCal(startTime, pastTime=datetime.time()):
+    spentTime = datetime.datetime.now() - startTime
+    hour = spentTime.seconds / 3600 + pastTime.hour
+    minute = (spentTime.seconds % 3600) / 60 + pastTime.minute
+    seconds = (spentTime.seconds % 3600) % 60 + pastTime.second
+    if seconds >= 60:
+        seconds -= 60
+        minute += 1
+    if minute >= 60:
+        hour += 1
+        minute -= 60
+    return datetime.time(int(hour), int(minute), int(seconds))
+
 
 if __name__ == "__main__":
     screen1()
