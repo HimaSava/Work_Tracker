@@ -22,11 +22,11 @@ topics = []
 topStatus = []
 topTime = []
 flag_screen2 = 0
-startTime = datetime.time()
+startTime = datetime.time(0,0)
 activeTopic = StringVar()
-pastTime = datetime.time()
+pastTime = datetime.time(0,0)
 On = False
-progStartTime = datetime.time()
+progStartTime = datetime.time(0,0)
 
 
 
@@ -40,11 +40,7 @@ def clearAll():
 
 def screen1():
     clearAll()
-    
-    # topStatus = ["Not Started","Not Started","Not Started","Not Started","Not Started","Not Started","Not Started"]
-    # topTime = [datetime.time(),datetime.time(),datetime.time(),datetime.time(),datetime.time(),datetime.time(),datetime.time()]
-
-    
+        
     titleFrame = Frame(root)
     titleFrame.pack()
     titleFrame.config(bg="black")
@@ -96,15 +92,23 @@ def screen2():
     statusoutLabel = Label(activityFrame, text="########", font =('arial', 12, 'normal'), bg="black", fg="#00FF00")
     statusoutLabel.grid(row=0, column=3, padx=10, pady=10)
 
-    actionButton = Button(activityFrame, text="Start", command=lambda: actionButton_command(clicked, actionButton),
+    buttonFrame = Frame(root)
+    buttonFrame.pack()
+    buttonFrame.config(bg="black")
+    actionButton = Button(buttonFrame, text="Start", command=lambda: actionButton_command(clicked, actionButton, status, time, statusoutLabel),
                             width = 10, height = 1,bg="black", fg="#00FF00", 
                             font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
-    actionButton.grid(row=1, column=1, padx=10, pady=10)
+    actionButton.grid(row=0, column=0, padx=10, pady=10)
 
-    endDayButton = Button(activityFrame, text="End Day", command=lambda: endDay(),
+    endDayButton = Button(buttonFrame, text="End Day", command=lambda: endDay(),
                             width = 10, height = 1,bg="black", fg="#00FF00", 
                             font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
-    endDayButton.grid(row=1, column=2, padx=10, pady=10)
+    endDayButton.grid(row=0, column=2, padx=10, pady=10)
+
+    modifyTopicButton = Button(buttonFrame, text="Modify Topic", command=lambda: screen3(),
+                            width = 10, height = 1,bg="black", fg="#00FF00", 
+                            font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
+    modifyTopicButton.grid(row=0, column=3, padx=10, pady=10)
 
 
     #Frame to display the Activities
@@ -112,9 +116,10 @@ def screen2():
     topicFrame.pack()
     topicFrame.config(bg="black")
 
-    Label(topicFrame, text="Topic", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=0, sticky=W, padx=40)
-    Label(topicFrame, text="Status", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=1, sticky=W, padx=20)
-    Label(topicFrame, text="Time", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=2, sticky=W, padx=20)
+    
+    Label(topicFrame, text="Topic", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=0, sticky="news", padx=40,)
+    Label(topicFrame, text="Status", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=1, sticky="news", padx=20)
+    Label(topicFrame, text="Time", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=2, sticky="news", padx=20)
     
     status = []
     time = []
@@ -123,24 +128,63 @@ def screen2():
         Label(topicFrame, text=topics[i], font =('arial', 12, 'normal'), bg="black", fg="#00FF00").grid(row=i+1, column=0, sticky=W, padx=40)
         status.append(Label(topicFrame, text=topStatus[i], font =('arial', 12, 'normal'), bg="black", fg="#00FF00"))
         status[i].grid(row=i+1, column=1, sticky=W)
-        time.append(Label(topicFrame, text=topTime[i].strftime("%H:%M:%S"), font =('arial', 12, 'normal'), bg="black", fg="#00FF00"))
+        time.append(Label(topicFrame, text=topTime[i].strftime("%H:%M"), font =('arial', 12, 'normal'), bg="black", fg="#00FF00"))
         time[i].grid(row=i+1, column=2, sticky=W)
     
 
+    
+
+    update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel)
+
+def screen3():
+    clearAll()
+    geo = "600x350"
+    root.geometry(geo)
+    screen3Frame = Frame(root)
+    screen3Frame.pack()
+    screen3Frame.config(bg="black")
+
+    Label(screen3Frame, text="ADD Topic", font =('arial',14,'bold'),bg="black",fg="#00FF00").pack(pady=20)
     #Add Topic
-    addTopicFrame = Frame(root)
+    addTopicFrame = Frame(screen3Frame)
     addTopicFrame.pack()
     addTopicFrame.config(bg="black")
+
     addTopicLabel = Label(addTopicFrame, text="Add Topic:", font =('arial', 12, 'bold'), bg="black", fg="#00FF00")
-    addTopicLabel.grid(row=0, column=0, padx=10, pady=10)
+    addTopicLabel.grid(row=1, column=0, padx=10, pady=10)
     addTopicEntry = Entry(addTopicFrame, width=20, bg="green", fg="black", font =('arial', 12, 'bold'))
-    addTopicEntry.grid(row=0, column=1, padx=10, pady=10)
+    addTopicEntry.grid(row=1, column=1, padx=10, pady=10)
     addTopicButton = Button(addTopicFrame, text="Add", command=lambda: addTopic(addTopicEntry),
                             width = 10, height = 1,bg="black", fg="#00FF00", 
                             font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
-    addTopicButton.grid(row=0, column=2, padx=10, pady=10)
+    addTopicButton.grid(row=1, column=2, padx=10, pady=10)
 
-    update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel)
+    Label(screen3Frame, text="Remove Topic", font =('arial',14,'bold'),bg="black",fg="#00FF00").pack(pady=20)
+    #Remove Topic
+    removeTopicFrame = Frame(screen3Frame)
+    removeTopicFrame.pack(pady=10)
+    removeTopicFrame.config(bg="black")
+
+    removeTopicLabel = Label(removeTopicFrame, text="Remove Topic:", font =('arial', 12, 'bold'), bg="black", fg="#00FF00")
+    removeTopicLabel.grid(row=1, column=0, padx=10, pady=10)
+    # removeTopicEntry = Entry(removeTopicFrame, width=20, bg="green", fg="black", font =('arial', 12, 'bold'))
+    # removeTopicEntry.grid(row=1, column=1, padx=10, pady=10)
+    selected = StringVar()
+    buttonMenu = OptionMenu(removeTopicFrame, selected, *topics)
+    buttonMenu.config( bg="black", fg="#00FF00", font = ('arial', 12, 'normal'), activebackground="#00FF00")
+    buttonMenu.grid(row=1, column=1, padx=10, pady=10)
+
+    removeTopicButton = Button(removeTopicFrame, text="Remove", command=lambda: removeTopic(selected),
+                            width = 10, height = 1,bg="black", fg="#00FF00", 
+                            font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
+    removeTopicButton.grid(row=1, column=2, padx=10, pady=10)
+
+    #Back button
+    backButton = Button(screen3Frame, text="Back", command=lambda: screen2(),
+                            width = 10, height = 1,bg="black", fg="#00FF00", 
+                            font = ('arial', 10, 'bold'), activebackground="#00FF00", activeforeground="white")
+    backButton.pack()
+
 
 
 def update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel):
@@ -150,35 +194,24 @@ def update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel):
     else:
         now = datetime.datetime.now()
         nowDate = now.strftime("%d/%m/%Y")
-        nowTime = now.strftime("%I:%M:%S %p")
+        nowTime = now.strftime("%I:%M %p")
         dateoutLabel.config(text=nowDate)
         timeoutLabel.config(text=nowTime)
         for i in range(len(topics)):
             if activeTopic == topics[i]:
-                # spentTime = datetime.datetime.now() - startTime
-                # hour = spentTime.seconds / 3600 + pastTime.hour
-                # minute = (spentTime.seconds % 3600) / 60 + pastTime.minute
-                # seconds = (spentTime.seconds % 3600) % 60 + pastTime.second
-                # if seconds >= 60:
-                #     seconds -= 60
-                #     minute += 1
-                # if minute >= 60:
-                #     hour += 1
-                #     minute -= 60
-                # topTime[i] = datetime.time(int(hour), int(minute), int(seconds))
                 topTime[i] = spentTimeCal(startTime, pastTime)
             
             if topStatus[i] == "In Progress":
                 status[i].config(text = topStatus[i], font=('arial',12,'bold'), fg="red")
             else:
                 status[i].config(text=topStatus[i], font=('arial',12,'normal'),fg="#00FF00")
-            time[i].config(text=topTime[i])          
+            time[i].config(text=topTime[i].strftime("%H:%M"))          
 
             if clicked.get() == topics[i]:
                 statusoutLabel.config(text=topStatus[i])
                 
 
-        root.after(100, lambda: update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel))
+        root.after(60000, lambda: update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel))
 
 
 
@@ -192,35 +225,43 @@ def startButton_command():
             if(row == ''):
                 break
             topics.append(row.removesuffix('\n'))
-    # print(topics)   
 
     topStatus = []
     topTime = []
     
     for i in range(len(topics)):
         topStatus.append("Not Started")
-        topTime.append(datetime.time())
+        topTime.append(datetime.time(0,0))
+
+    with open("Day_Log.csv",'r') as file:
+        row = file.readline()
+        if(row == ''):
+            screen2()
+        row = row.removesuffix('\n')
+        date = row.split(',')[1]
+        if(date == datetime.datetime.now().strftime("%d/%m/%Y")):
+            while(True):
+                row = file.readline()  
+                if(row == ''):
+                    break
+                top = row.split(',')[0]
+                status = row.split(',')[1]
+                time = row.split(',')[2].removesuffix('\n')
+                for i in range(len(topics)):
+                    if(top == topics[i]):
+                        topStatus[i] = status
+                        topTime[i] = datetime.datetime.strptime(time, "%H:%M")
+            
 
     screen2()
 
-def actionButton_command(clicked, actionButton):
+def actionButton_command(clicked, actionButton, status, time , statusoutLabel):
     global On, activeTopic, topics, topStatus, topTime, startTime, pastTime, logFlag
     if On == True:
         for i in range(len(topics)):
             if activeTopic == topics[i]:
                 On = False
                 topStatus[i] = "Done"
-                # spentTime = datetime.datetime.now() - startTime
-                # hour = spentTime.seconds / 3600 + pastTime.hour
-                # minute = (spentTime.seconds % 3600) / 60 + pastTime.minute
-                # seconds = (spentTime.seconds % 3600) % 60 + pastTime.second
-                # if seconds >= 60:
-                #     seconds -= 60
-                #     minute += 1
-                # if minute >= 60:
-                #     hour += 1
-                #     minute -= 60
-                # topTime[i] = datetime.time(int(hour), int(minute), int(seconds))
                 topTime[i] = spentTimeCal(startTime, pastTime)
                 actionButton.config(text="Start", fg="#00FF00")
                 log(activeTopic, startTime)
@@ -235,38 +276,62 @@ def actionButton_command(clicked, actionButton):
                 pastTime = topTime[i]
                 On = True
                 actionButton.config(text="Stop", fg="red")
+    for i in range(len(topics)):
+            if activeTopic == topics[i]:
+                topTime[i] = spentTimeCal(startTime, pastTime)
+
+            
+            if topStatus[i] == "In Progress":
+                status[i].config(text = topStatus[i], font=('arial',12,'bold'), fg="red")
+            else:
+                status[i].config(text=topStatus[i], font=('arial',12,'normal'),fg="#00FF00")
+            time[i].config(text=topTime[i].strftime("%H:%M"))          
+
+            if clicked.get() == topics[i]:
+                statusoutLabel.config(text=topStatus[i])
 
 def log(activeTopic, startTime):
-    # spentTime = datetime.datetime.now() - startTime
-    # hour = (spentTime.days*24) +int(spentTime.seconds/3600)
-    # minute = int(spentTime.seconds/60) 
-    # seconds = spentTime.seconds 
-    # spent = datetime.time(hour, minute, seconds)
     spent = spentTimeCal(startTime)
     now = datetime.datetime.now()
     nowDate = now.strftime("%d/%m/%Y")
-    nowTime = now.strftime("%I:%M:%S %p")
-    write = activeTopic + "," + nowDate + ',' + startTime.strftime("%I:%M:%S %p") + ',' + nowTime + ',' + spent.strftime("%X") + '\n'
+    nowTime = now.strftime("%I:%M %p")
+    write = activeTopic + "," + nowDate + ',' + startTime.strftime("%I:%M %p") + ',' + nowTime + ',' + spent.strftime("%X") + '\n'
     with open('log.csv', 'a') as f:
         f.write(write) 
 
-def newlog(newactivity):
+def newlog(newactivity, added = True):
     now = datetime.datetime.now()
     nowDate = now.strftime("%d/%m/%Y")
-    nowTime = now.strftime("%I:%M:%S %p")
+    nowTime = now.strftime("%I:%M %p")
     temp = datetime.time()
-    write = newactivity + ',' + nowDate + ',' + nowTime + ',' + temp.strftime("%X") + ',' + temp.strftime("%X") + ',' + 'New Addition' +'\n'
+    write = newactivity + ',' + nowDate + ',' + nowTime + ',' + temp.strftime("%X") + ',' + temp.strftime("%X") + ','
+    if added:
+        write = write + 'New Addition' +'\n'
+    else:
+        write = write + 'Removed' +'\n'
     with open('log.csv', 'a') as f:
         f.write(write) 
 
 def endDay():
-    global topTime, topics, topStatus, progStartTime
+    global topTime, topics, topStatus, progStartTime, On, activeTopic, startTime, pastTime
+    if On == True:
+        for i in range(len(topics)):
+            if activeTopic == topics[i]:
+                On = False
+                topStatus[i] = "Done"
+                topTime[i] = spentTimeCal(startTime, pastTime)
+                log(activeTopic, startTime)
+                activeTopic = ""
     with open('EndDay_Log.csv','a') as file:
         file.write('\n' + "Date" + "," + datetime.datetime.now().strftime("%d/%m/%Y") + '\n')
         file.write("Start time" + "," + progStartTime.strftime("%X") + '\n')
         file.write("End time" + "," + datetime.datetime.now().strftime("%X") + '\n')
         for i in range(len(topics)):
-            file.write(topics[i] + "," + topStatus[i] + ',' + topTime[i].strftime("%X") + '\n')        
+            file.write(topics[i] + "," + topStatus[i] + ',' + topTime[i].strftime("%X") + '\n')     
+    with open('Day_Log.csv','w') as file:
+        file.write("Date" + "," + datetime.datetime.now().strftime("%d/%m/%Y") + '\n')
+        for i in range(len(topics)):
+            file.write(topics[i] + "," + topStatus[i] + ',' + topTime[i].strftime("%H:%M") + '\n')
     screen1()
 
 def addTopic(addTopicEntry):
@@ -277,8 +342,20 @@ def addTopic(addTopicEntry):
         file.write(addTopicEntry.get() + '\n')
     topStatus.append("Not Started")
     topTime.append(datetime.time())
-    newlog(newtopic)
+    newlog(newtopic, True)
     addTopicEntry.delete(0, END)
+    screen2()
+
+def removeTopic(removeTopicEntry):
+    global topics, topStatus, topTime
+
+    topStatus.remove(topStatus[topics.index(removeTopicEntry.get())])
+    topTime.remove(topTime[topics.index(removeTopicEntry.get())])
+    topics.remove(removeTopicEntry.get())
+    with open("Topics.csv",'w') as file:
+        for i in range(len(topics)):
+            file.write(topics[i] + '\n')
+    newlog(removeTopicEntry.get(), False)
     screen2()
 
 def spentTimeCal(startTime, pastTime=datetime.time()):
@@ -292,7 +369,7 @@ def spentTimeCal(startTime, pastTime=datetime.time()):
     if minute >= 60:
         hour += 1
         minute -= 60
-    return datetime.time(int(hour), int(minute), int(seconds))
+    return datetime.time(int(hour), int(minute))
 
 
 if __name__ == "__main__":
