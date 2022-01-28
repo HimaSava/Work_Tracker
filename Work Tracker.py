@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import * 
 import tkinter.font as tkFont
 import datetime
+from turtle import ScrolledCanvas
 
 #Tkinter Init
 root = tk.Tk()
@@ -58,6 +59,9 @@ def screen2():
     clearAll()
     flag_screen2 = 1
     height = 200 + (len(topics) * 30)
+    if(height > 400):
+        height = 400
+    
     geo = "600x" + str(height)
     root.geometry(geo)
     progStartTime = datetime.datetime.now()
@@ -111,30 +115,46 @@ def screen2():
     modifyTopicButton.grid(row=0, column=3, padx=10, pady=10)
 
 
-    #Frame to display the Activities
-    topicFrame = Frame(root)
-    topicFrame.pack()
-    topicFrame.config(bg="black")
+    #Frame to display the Activities 
+    headFrame = Frame(root)
+    headFrame.pack()
+    headFrame.config(bg="black")
 
+    Label(headFrame, text="Topic", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=0, sticky="news", padx=40,)
+    Label(headFrame, text="Status", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=1, sticky="news", padx=40)
+    Label(headFrame, text="Time", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=2, sticky="news", padx=40)
     
-    Label(topicFrame, text="Topic", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=0, sticky="news", padx=40,)
-    Label(topicFrame, text="Status", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=1, sticky="news", padx=20)
-    Label(topicFrame, text="Time", font =('arial', 14, 'bold'), bg="black", fg="#00FF00").grid(row=0, column=2, sticky="news", padx=20)
+    canvas = Canvas(root, background="black", height=height, width = 600, highlightthickness=0)
+    topicFrame = Frame(canvas, background="black")
+    topicFrame.pack(side="top", fill="both", expand=True)
+    vsb = Scrollbar(root, orient="vertical", command=canvas.yview)
+    canvas.configure(yscrollcommand=vsb.set)
+
+    vsb.pack(side="right", fill="y")
+    canvas.pack(side="top", expand=FALSE)
+    canvas.create_window(100,2, window=topicFrame, anchor="nw")
+
+    topicFrame.bind("<Configure>", lambda event, canvas=canvas: onFrameConfigure(canvas))
+    # topicFrame = Frame(root)
+    # topicFrame.pack()
+    # topicFrame.config(bg="black")
+    
     
     status = []
     time = []
 
     for i in range(len(topics)):
-        Label(topicFrame, text=topics[i], font =('arial', 12, 'normal'), bg="black", fg="#00FF00").grid(row=i+1, column=0, sticky=W, padx=40)
+        Label(topicFrame, text=topics[i], font =('arial', 12, 'normal'), bg="black", fg="#00FF00").grid(row=i+1, column=0, padx=40)
         status.append(Label(topicFrame, text=topStatus[i], font =('arial', 12, 'normal'), bg="black", fg="#00FF00"))
-        status[i].grid(row=i+1, column=1, sticky=W)
+        status[i].grid(row=i+1, column=1)
         time.append(Label(topicFrame, text=topTime[i].strftime("%H:%M"), font =('arial', 12, 'normal'), bg="black", fg="#00FF00"))
-        time[i].grid(row=i+1, column=2, sticky=W)
-    
-
-    
+        time[i].grid(row=i+1, column=2)    
 
     update(dateoutLabel, timeoutLabel, status, time, clicked, statusoutLabel)
+
+def onFrameConfigure(canvas):
+    '''Reset the scroll region to encompass the inner frame'''
+    canvas.configure(scrollregion=canvas.bbox("all"))
 
 def screen3():
     clearAll()
